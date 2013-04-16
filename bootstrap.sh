@@ -4,7 +4,7 @@
 #   Environment   #
 # ############### #
 virtualenv -p `which python` --distribute .
-ENV-$(pwd -P)
+ENV=$(pwd -P)
 PYTHON=$ENV/bin/python
 
 # ########### #
