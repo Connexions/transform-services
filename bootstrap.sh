@@ -4,7 +4,8 @@
 #   Environment   #
 # ############### #
 virtualenv -p `which python` --distribute .
-PYTHON=$(pwd -P)/bin/python
+ENV-$(pwd -P)
+PYTHON=$ENV/bin/python
 
 # ########### #
 #   Sources   #
@@ -33,3 +34,14 @@ git clone https://github.com/Connexions/rbit-ext.git
 cd rbit-ext
 $PYTHON setup.py develop
 cd ..
+
+# ########### #
+#   Configs   #
+# ########### #
+
+
+# ############ #
+#   DB setup   #
+# ############ #
+# ASSUMES the pybit DB has been created.
+psql --user pybit pybit --command "\i $ENV/src/pybit/db/schema.sql; \i $ENV/src/pybit/db/populate.sql"
