@@ -11,3 +11,4 @@ bin
 develop-eggs
 eggs
 src
+etc/*.ini
