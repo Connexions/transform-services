@@ -10,5 +10,12 @@
 bin
 develop-eggs
 eggs
-src
 etc/*.ini
+
+# Sources #
+###########
+src/acmeio
+src/pybit
+src/tumbleweed
+src/coyote
+src/roadrunners

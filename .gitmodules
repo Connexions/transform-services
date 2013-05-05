@@ -1,0 +1,6 @@
+[submodule "src/Products.RhaptosPrint"]
+	path = src/Products.RhaptosPrint
+	url = git@github.com:Rhaptos/Products.RhaptosPrint.git
+[submodule "cnx-buildout"]
+	path = cnx-buildout
+	url = git@github.com:Rhaptos/cnx-buildout.git

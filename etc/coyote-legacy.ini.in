@@ -9,6 +9,55 @@ port = 5672
 user = guest
 password = guest
 
+
+[DEFAULTS]
+output-dir = ${options['output-dir']}
+python = ${options['python24-env']}/bin/python
+print-dir = ${options['Products.RhaptosPrint']}/Products/RhaptosPrint/printing
+oer.exports-dir = ${options['oer.exports']}
+
+
+[runner:print]
+# This is the LaTex PDF generator.
+runner = python!rbitext.legacy:make_print
+##output-dir =
+##python =
+##print-dir =
+
+
+[runner:epub]
+runner = python!rbitext.epub:make_epub
+##output-dir =
+##oer.exports-dir =
+
+
+[runner:pdf]
+# This is the PrinceXML PDF generator.
+runner = python!rbitext.pdf:make_pdf
+pdf-generator = /usr/local/bin/prince
+#pdf-generator = /usr/local/bin/wkhtmltopdf
+##output-dir =
+##oer.exports-dir =
+
+
+[runner:completezip]
+runner = python!rbitext.legacy:make_completezip
+##output-dir =
+# Info for connecting to the (Plone based) repository.
+username = user1
+password = user1
+path-to-content = /plone/content
+
+
+[runner:offlinezip]
+runner = python!rbitext.legacy:make_offlinezip
+##output-dir =
+##oer.exports-dir =
+##python-env =
+# This is pulled in via a git sub-repository.
+cnx-buildout-dir = ${options['cnx-buildout-dir']}/cnx-buildout
+
+
 ###
 # logging configuration
 ###
