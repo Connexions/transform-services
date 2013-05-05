@@ -10,7 +10,7 @@ Dependencies
 - Python 2.7
 - RabbitMQ
 - Postgres
-- Python 2.4 (if using roadrunners lagacy)
+- Python 2.4 (if using roadrunners legacy)
 
 And others depending on what runners you use.
 
@@ -19,10 +19,25 @@ Getting Started
 
 You'll need to setup RabbitMQ and Postgres on your own. Postgres will
 need to be setup with a ``pybit`` database and the ``pybit:pybit``
-user:pass. And you'll need to initialize the database. This can be
-done using the ``init-db.sh`` script provided with this project::
+user:pass. And you'll need to initialize the database.
 
-    $ ./init-db.sh
+.. note:: You will likely want to install ``psycopg2`` at the system level
+   or in a virtual environment before running the following command.
+
+To initialize the system use the provided ``init.sh`` script. This script
+initializes git submodules, builds the system (via buildout), and initializes
+the database.
+
+::
+
+    $ ./init.sh
+
+.. note:: ``init.sh`` uses the system python by default. If you are building
+   against a virtual environment, you can set the ``PYTHON`` environment
+   variable to the executable in the virtual environment. For example, if
+   our virtual environment were one layer down::
+
+       $ PYTHON=../bin/python ./init.sh
 
 To run acmeio (the transformation services web services API)::
 
