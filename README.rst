@@ -1,60 +1,42 @@
 Transformation Services
 =======================
 
-This is a *poor* attempt to automate the installation of the
-transformation services system. It is a poor attempt because the setup
-is inherently complicated due to the dependent components, wrapping of
-environments and external or system dependencies needed to run various
-pieces of the system. That said, this should be used as a baseline
-rather than a complete install. 
+This is an attempt to automate the installation of the
+transformation services system.
 
 Dependencies
 ------------
 
 ``*`` indicates that it is not included in this build.
 
+- Python 2.7 *
 - RabbitMQ *
 - Postgres *
-- PyBit
-- rbit
-- rbit-ext
+- Python 2.4 * (if using roadrunners lagacy)
 
-And others depending on depending on what runners you use in ``rbit-ext``.
+And others depending on what runners you use.
 
-Getting started
+Getting Started
 ---------------
 
 You'll need to setup RabbitMQ and Postgres on your own. Postgres will
 need to be setup with a ``pybit`` database and the ``pybit:pybit``
 user:pass.
 
-To initialize the main components of the system, run the following commands::
+To build the main components of the system, run the following commands::
 
-    $ ./bootstrap.sh
+    $ python bootstrap.py -c buildout.cfg
+    $ bin/buildout
 
-Unfortunatly, I don't recall enough bash and sed to generate the
-configs. So you'll need to copy the ``*.in`` files and replace the
-``@ENV@`` variables yourself.
+To run acmeio (the transformation services web services API)::
 
-From this point forward, ``$PYTHON`` will refer to the the python at
-``bin/python`` in the created environment. And ``$ENV`` will refer to
-the environment itself.
+    $ bin/pserve etc/acmeio.ini
 
-To run PyBit (it is very important to call the script from within it's
-project location)::
+To run tumbleweed (the status message consumer process)::
 
-    $ cd $ENV/pybit
-    $ $PYTHON pybit_web.py --config $ENV/pybit.conf -v
+    $ bin/tumbleweed etc/tumbleweed.ini
 
-To run cnx-pybit::
+An instance of coyote has been configured with the legacy runners as
+part of this build. You can run them using::
 
-    $ cd $ENV
-    $ $ENVbin/cnx-pybit --config $ENV/pybit.conf -v
-
-Before you run rbit, you'll likely want to configure a runner or
-two. See the rbit documentation regarding this configuration and you
-can also use the ``src/rbit/development.ini`` as a guide.
-
-To run rbit::
-
-    $ $ENV/bin/rbit $VENV/rbit.ini
+    $ bin/coyote etc/coyote-legacy.ini
