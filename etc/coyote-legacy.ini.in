@@ -12,7 +12,7 @@ user = guest
 password = guest
 
 
-[DEFAULTS]
+[DEFAULT]
 output-dir = ${options['output-dir']}
 python = ${options['python24-env']}/bin/python
 print-dir = ${options['Products.RhaptosPrint']}/Products/RhaptosPrint/printing
