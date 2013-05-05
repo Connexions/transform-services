@@ -2,6 +2,8 @@
 # These queue to runner mappings (<queue_name>:<runner_name>) propulate the
 #   queues list to run through during runtime.
 queue-mappings =
+    cnx_desktop_latex_completezip:completezip
+
 
 [amqp]
 host = localhost
@@ -17,31 +19,8 @@ print-dir = ${options['Products.RhaptosPrint']}/Products/RhaptosPrint/printing
 oer.exports-dir = ${options['oer.exports']}
 
 
-[runner:print]
-# This is the LaTex PDF generator.
-runner = python!rbitext.legacy:make_print
-##output-dir =
-##python =
-##print-dir =
-
-
-[runner:epub]
-runner = python!rbitext.epub:make_epub
-##output-dir =
-##oer.exports-dir =
-
-
-[runner:pdf]
-# This is the PrinceXML PDF generator.
-runner = python!rbitext.pdf:make_pdf
-pdf-generator = /usr/local/bin/prince
-#pdf-generator = /usr/local/bin/wkhtmltopdf
-##output-dir =
-##oer.exports-dir =
-
-
 [runner:completezip]
-runner = python!rbitext.legacy:make_completezip
+runner = python!roadrunners.legacy:make_completezip
 ##output-dir =
 # Info for connecting to the (Plone based) repository.
 username = user1
@@ -50,12 +29,35 @@ path-to-content = /plone/content
 
 
 [runner:offlinezip]
-runner = python!rbitext.legacy:make_offlinezip
+runner = python!roadrunners.legacy:make_offlinezip
 ##output-dir =
 ##oer.exports-dir =
 ##python-env =
 # This is pulled in via a git sub-repository.
 cnx-buildout-dir = ${options['cnx-buildout-dir']}/cnx-buildout
+
+
+[runner:print]
+# This is the LaTex PDF generator.
+runner = python!roadrunners.legacy:make_print
+##output-dir =
+##python =
+##print-dir =
+
+
+[runner:epub]
+runner = python!roadrunners.epub:make_epub
+##output-dir =
+##oer.exports-dir =
+
+
+[runner:pdf]
+# This is the PrinceXML PDF generator.
+runner = python!roadrunners.pdf:make_pdf
+pdf-generator = /usr/local/bin/prince
+#pdf-generator = /usr/local/bin/wkhtmltopdf
+##output-dir =
+##oer.exports-dir =
 
 
 ###
