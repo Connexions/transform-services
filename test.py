@@ -8,6 +8,7 @@
 """Script for stimulating the transformation service system components."""
 import os
 import argparse
+import json
 import sqlite3
 import requests
 
@@ -33,6 +34,32 @@ def inject(args, db_connection):
     cursor.execute("INSERT INTO jobs VALUES (?, ?)",
                    (job_id, watch_url))
     print(watch_url)
+    cursor.close()
+
+
+def watch(args, db_connection):
+    """Watch for job status changes"""
+    cursor = db_connection.cursor()
+    cursor.execute("SELECT * FROM jobs")
+    jobs = cursor.fetchall()
+    if not jobs:
+        print("No jobs to watch.")
+    for id, url in jobs:
+        print("Looking into job '{}' at '{}'.".format(id, url))
+        resp = requests.get(url)
+        if resp.status_code == 200:
+            print("... Done.")
+            cursor.execute("DELETE FROM jobs WHERE id=?", (id,))
+        elif resp.status_code == 202:
+            data = resp.json()
+            latest_message = data['messages'][-1]
+            status = latest_message['type']
+            msg = latest_message['message']
+            time = latest_message['timestamp']
+            print("... Current status: {} - '{}' @ {}".format(
+                    status, msg, time))
+        else:
+            print("... Unknown.")
     cursor.close()
 
 
@@ -63,6 +90,8 @@ def main(argv=None):
     inject_parser.add_argument('job_type')
     inject_parser.add_argument('url')
     inject_parser.set_defaults(func=inject)
+    watch_parser = subparsers.add_parser('watch')
+    watch_parser.set_defaults(func=watch)
     args = parser.parse_args(argv)
 
     db_connection = sqlite3.connect(DATABASE_FILE)
