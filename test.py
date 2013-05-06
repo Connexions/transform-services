@@ -6,13 +6,19 @@
 # See LICENCE.txt for details.
 # ###
 """Script for stimulating the transformation service system components."""
+import os
 import argparse
+import sqlite3
 import requests
+
+
+here = os.path.abspath(os.path.dirname(__file__))
+DATABASE_FILE = os.path.join(here, '.{}.db'.format(__file__))
 
 
 # Commands inject, watch, kill
 
-def inject(args):
+def inject(args, db_connection):
     """Inject a job into the system"""
     payload = {
         'job-type': args.job_type,
@@ -20,7 +26,32 @@ def inject(args):
         }
     resp = requests.post(args.acmeio, data=payload)
     watch_url = resp.text
+    # Grab the job id off the URL.
+    job_id = watch_url.split('/')[-1]
+
+    cursor = db_connection.cursor()
+    cursor.execute("INSERT INTO jobs VALUES (?, ?)",
+                   (job_id, watch_url))
     print(watch_url)
+    cursor.close()
+
+
+def _has_database(db_connection):
+    """Check to see if the database has been initialized."""
+    cursor = db_connection.cursor()
+    cursor.execute("SELECT name FROM sqlite_master WHERE type=? AND name=?",
+                   ('table', 'jobs'))
+    result = cursor.fetchone()
+    cursor.close()
+    return result is not None
+
+
+def _init_database(db_connection):
+    """Initialize the database"""
+    cursor = db_connection.cursor()
+    cursor.execute("CREATE TABLE jobs (id SERIAL PRIMARY KEY NOT NULL, url TEXT NOT NULL)")
+    db_connection.commit()
+    cursor.close()
 
 def main(argv=None):
     """Main commandline interface"""
@@ -34,7 +65,13 @@ def main(argv=None):
     inject_parser.set_defaults(func=inject)
     args = parser.parse_args(argv)
 
-    args.func(args)
+    db_connection = sqlite3.connect(DATABASE_FILE)
+    if not _has_database(db_connection):
+        _init_database(db_connection)
+
+    args.func(args, db_connection)
+
+    db_connection.commit()
 
     return 0
 
