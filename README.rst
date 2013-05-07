@@ -66,22 +66,22 @@ system is made up of several parts that function together to
 asynchronously produce the transformed content. The following is a
 list of packages that make up the system.
 
-- acmeio -
+- `acmeio <https://github.com/connexions/acmeio>`_ -
   A web application that is an implementation of the transformation
   services API specification. This service is used to create an
   monitor transform requests (or jobs or build requests). This
   application is the producer of messages in the message queue
   (RabbitMQ) and maintains the state of these messages (in
   PostgreSQL).
-- coyote -
+- `coyote <https://github.com/connexions/coyote>`_ -
   A process for consuming messages and managing the message's state.
   It is the communication medium between the message queue (RabbitMQ)
   and the transformation logic.
-- roadrunners -
+- `roadrunners <https://github.com/connexions/roadrunners>`_ -
   A Python library of various transformation functions (or
   runners). The runners in this package receive their processing data
   via a coyote process.
-- tumbleweed -
+- `tumbleweed <https://github.com/connexions/tumbleweed>`_ -
   A background process for consuming status messages from the message
   queue (RabbitMQ) to persist them in the acmeio database (PostgreSQL).
 
