@@ -58,6 +58,33 @@ following commands::
 
     $ bin/buildout
 
+Component Overview
+------------------
+
+This is one implementation of the transformation services system. The
+system is made up of several parts that function together to
+asynchronously produce the transformed content. The following is a
+list of packages that make up the system.
+
+- acmeio -
+  A web application that is an implementation of the transformation
+  services API specification. This service is used to create an
+  monitor transform requests (or jobs or build requests). This
+  application is the producer of messages in the message queue
+  (RabbitMQ) and maintains the state of these messages (in
+  PostgreSQL).
+- coyote -
+  A process for consuming messages and managing the message's state.
+  It is the communication medium between the message queue (RabbitMQ)
+  and the transformation logic.
+- roadrunners -
+  A Python library of various transformation functions (or
+  runners). The runners in this package receive their processing data
+  via a coyote process.
+- tumbleweed -
+  A background process for consuming status messages from the message
+  queue (RabbitMQ) to persist them in the acmeio database (PostgreSQL).
+
 License
 -------
 
