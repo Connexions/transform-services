@@ -6,4 +6,4 @@ git submodule init && git submodule update
 cd ../../
 $PYTHON bootstrap.py -c buildout.cfg
 bin/buildout -c buildout.cfg
-init-db.sh
+./init-db.sh
