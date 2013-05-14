@@ -1,60 +1,93 @@
 Transformation Services
 =======================
 
-This is a *poor* attempt to automate the installation of the
-transformation services system. It is a poor attempt because the setup
-is inherently complicated due to the dependent components, wrapping of
-environments and external or system dependencies needed to run various
-pieces of the system. That said, this should be used as a baseline
-rather than a complete install. 
+This is an attempt to automate the installation of the
+transformation services system.
 
 Dependencies
 ------------
 
-``*`` indicates that it is not included in this build.
+- Python 2.7
+- RabbitMQ
+- Postgres
+- Python 2.4 (if using roadrunners legacy)
 
-- RabbitMQ *
-- Postgres *
-- PyBit
-- rbit
-- rbit-ext
+And others depending on what runners you use.
 
-And others depending on depending on what runners you use in ``rbit-ext``.
-
-Getting started
+Getting Started
 ---------------
 
 You'll need to setup RabbitMQ and Postgres on your own. Postgres will
 need to be setup with a ``pybit`` database and the ``pybit:pybit``
-user:pass.
+user:pass. And you'll need to initialize the database.
 
-To initialize the main components of the system, run the following commands::
+.. note:: You will likely want to install ``psycopg2`` at the system level
+   or in a virtual environment before running the following command.
 
-    $ ./bootstrap.sh
+To initialize the system use the provided ``init.sh`` script. This script
+initializes git submodules, builds the system (via buildout), and initializes
+the database.
 
-Unfortunatly, I don't recall enough bash and sed to generate the
-configs. So you'll need to copy the ``*.in`` files and replace the
-``@ENV@`` variables yourself.
+::
 
-From this point forward, ``$PYTHON`` will refer to the the python at
-``bin/python`` in the created environment. And ``$ENV`` will refer to
-the environment itself.
+    $ ./init.sh
 
-To run PyBit (it is very important to call the script from within it's
-project location)::
+.. note:: ``init.sh`` uses the system python by default. If you are building
+   against a virtual environment, you can set the ``PYTHON`` environment
+   variable to the executable in the virtual environment. For example, if
+   our virtual environment were one layer down::
 
-    $ cd $ENV/pybit
-    $ $PYTHON pybit_web.py --config $ENV/pybit.conf -v
+       $ PYTHON=../bin/python ./init.sh
 
-To run cnx-pybit::
+To run acmeio (the transformation services web services API)::
 
-    $ cd $ENV
-    $ $ENVbin/cnx-pybit --config $ENV/pybit.conf -v
+    $ bin/pserve etc/acmeio.ini
 
-Before you run rbit, you'll likely want to configure a runner or
-two. See the rbit documentation regarding this configuration and you
-can also use the ``src/rbit/development.ini`` as a guide.
+To run tumbleweed (the status message consumer process)::
 
-To run rbit::
+    $ bin/tumbleweed etc/tumbleweed.ini
 
-    $ $ENV/bin/rbit $VENV/rbit.ini
+An instance of coyote has been configured with the legacy runners as
+part of this build. You can run them using::
+
+    $ bin/coyote etc/coyote-legacy.ini
+
+If you make changes to the buildout configuration in ``buildout.cfg``, you
+will need to rebuild the project. You can do this by running the
+following commands::
+
+    $ bin/buildout
+
+Component Overview
+------------------
+
+This is one implementation of the transformation services system. The
+system is made up of several parts that function together to
+asynchronously produce the transformed content. The following is a
+list of packages that make up the system.
+
+- `acmeio <https://github.com/connexions/acmeio>`_ -
+  A web application that is an implementation of the transformation
+  services API specification. This service is used to create an
+  monitor transform requests (or jobs or build requests). This
+  application is the producer of messages in the message queue
+  (RabbitMQ) and maintains the state of these messages (in
+  PostgreSQL).
+- `coyote <https://github.com/connexions/coyote>`_ -
+  A process for consuming messages and managing the message's state.
+  It is the communication medium between the message queue (RabbitMQ)
+  and the transformation logic.
+- `roadrunners <https://github.com/connexions/roadrunners>`_ -
+  A Python library of various transformation functions (or
+  runners). The runners in this package receive their processing data
+  via a coyote process.
+- `tumbleweed <https://github.com/connexions/tumbleweed>`_ -
+  A background process for consuming status messages from the message
+  queue (RabbitMQ) to persist them in the acmeio database (PostgreSQL).
+
+License
+-------
+
+This software is subject to the provisions of the GNU Affero General
+Public License Version 3.0 (AGPL). See license.txt for details.
+Copyright (c) 2013 Rice University
